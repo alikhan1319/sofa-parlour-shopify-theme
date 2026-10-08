@@ -30,7 +30,26 @@
 {%- liquid
   assign s = section.settings
   assign app_blocks = section.blocks | where: 'type', '@app'
-  assign review_blocks = section.blocks | where: 'type', 'review'
+
+  comment
+    The product template is shared by every product, so each review block
+    names the product it belongs to. Blocks with no product chosen are
+    store-wide and show on every product page. The filtered list is built
+    as indices because Liquid cannot push to an array of blocks.
+  endcomment
+  assign review_idx = ''
+  for block in section.blocks
+    if block.type == 'review'
+      if block.settings.product == blank or block.settings.product.id == product.id
+        assign review_idx = review_idx | append: forloop.index0 | append: ','
+      endif
+    endif
+  endfor
+  assign review_idx = review_idx | split: ','
+  assign review_blocks = section.blocks | where: 'type', 'none'
+  if review_idx.size > 0
+    assign review_blocks = review_idx
+  endif
   assign is_preview = false
   if theme.role != 'main'
     assign is_preview = true
@@ -64,7 +83,9 @@
 
   if mode == 'blocks'
     assign sum = 0
-    for block in review_blocks
+    for i in review_blocks
+      assign bi = i | plus: 0
+      assign block = section.blocks[bi]
       assign r = block.settings.rating | plus: 0
       assign sum = sum | plus: r
       case r
@@ -193,8 +214,10 @@
           {%- comment -%} ---------- Cards ---------- {%- endcomment -%}
           <ul class="sp-rv__grid" role="list">
             {%- if mode == 'blocks' -%}
-              {%- for block in review_blocks limit: s.max_reviews -%}
+              {%- for i in review_blocks limit: s.max_reviews -%}
                 {%- liquid
+                  assign bi = i | plus: 0
+                  assign block = section.blocks[bi]
                   assign b = block.settings
                   assign r_pct = b.rating | times: 20
                 -%}
@@ -292,6 +315,7 @@
       "limit": 24,
       "settings": [
         { "type": "paragraph", "content": "Add only reviews a real customer gave you, in their words." },
+        { "type": "product", "id": "product", "label": "Product", "info": "The product this review is about. Leave empty to show it on every product page (for a review of the shop itself)." },
         { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
         { "type": "text", "id": "title", "label": "Title" },
         { "type": "textarea", "id": "text", "label": "Review" },
