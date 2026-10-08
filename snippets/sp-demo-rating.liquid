@@ -16,8 +16,8 @@
 {%- endcomment -%}
 {%- if theme.role != 'main' and id != blank -%}
   {%- liquid
-    assign demo_values = '4.5,4.8,4.6,4.9,4.7,4.8' | split: ','
-    assign demo_i = id | modulo: 13 | modulo: 6
+    assign demo_values = '4.5,4.6,4.4,4.8' | split: ','
+    assign demo_i = id | modulo: 13 | modulo: 4
     assign demo_count = id | modulo: 87 | plus: 14
   -%}
   {{- demo_values[demo_i] }}|{{ demo_count -}}
