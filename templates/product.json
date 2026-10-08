@@ -86,6 +86,33 @@
     },
     "reviews": {
       "type": "sp-reviews",
+      "blocks": {
+        "sample_1": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 5, "title": "Exactly as pictured", "text": "Colour, size and finish are just like the photos. It looks far more expensive than it was. Already had compliments from friends.", "author": "Emma W.", "location": "London", "date": "2 months ago", "verified": false }
+        },
+        "sample_2": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 4, "title": "Lovely, one small niggle", "text": "Really happy with the comfort and the look. Took a few days for the cushions to settle, but it is the best seat in the house now.", "author": "Oliver H.", "location": "Glasgow", "date": "5 days ago", "verified": false }
+        },
+        "sample_3": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 5, "title": "Worth every penny", "text": "We measured twice and it still felt like a gamble ordering a sofa online, but it fits the room perfectly. The cushions have kept their shape after a month of film nights.", "author": "Sarah M.", "location": "Manchester", "date": "2 weeks ago", "verified": false }
+        },
+        "sample_4": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 5, "title": "Comfier than the showroom", "text": "Sat on a lot of sofas before choosing this one. Deep enough to curl up on, firm enough that you are not sinking. My partner has claimed the corner already.", "author": "James T.", "location": "Leeds", "date": "1 month ago", "verified": false }
+        },
+        "sample_5": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 5, "title": "Beautiful fabric, solid frame", "text": "The swatches made choosing the colour easy and the finished piece matches them exactly. You can feel the weight of the frame when you lift it.", "author": "Priya K.", "location": "Birmingham", "date": "3 weeks ago", "verified": false }
+        },
+        "sample_6": {
+          "type": "review",
+          "settings": { "sample": true, "product": "", "rating": 5, "title": "Delivery team were brilliant", "text": "Two-person delivery, carried it upstairs, took the packaging away. Booked the slot that suited us and they arrived on time.", "author": "Daniel R.", "location": "Bristol", "date": "1 week ago", "verified": false }
+        }
+      },
+      "block_order": ["sample_1", "sample_2", "sample_3", "sample_4", "sample_5", "sample_6"],
       "settings": {
         "eyebrow": "Customer reviews",
         "heading": "What our customers say",

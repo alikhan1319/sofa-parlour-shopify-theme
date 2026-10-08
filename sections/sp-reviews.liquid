@@ -31,35 +31,49 @@
   assign s = section.settings
   assign app_blocks = section.blocks | where: 'type', '@app'
 
-  comment
-    The product template is shared by every product, so each review block
-    names the product it belongs to. Blocks with no product chosen are
-    store-wide and show on every product page. The filtered list is built
-    as indices because Liquid cannot push to an array of blocks.
-  endcomment
-  assign review_idx = ''
-  for block in section.blocks
-    if block.type == 'review'
-      if block.settings.product == blank or block.settings.product.id == product.id
-        assign review_idx = review_idx | append: forloop.index0 | append: ','
-      endif
-    endif
-  endfor
-  assign review_idx = review_idx | split: ','
-  assign review_blocks = section.blocks | where: 'type', 'none'
-  if review_idx.size > 0
-    assign review_blocks = review_idx
-  endif
   assign is_preview = false
   if theme.role != 'main'
     assign is_preview = true
   endif
 
+  comment
+    The product template is shared by every product, so each review block
+    names the product it belongs to; no product chosen = store-wide.
+
+    Blocks ticked "Sample" are editable placeholders for presenting the
+    design. They show only on preview themes, and only while this product
+    has no real (unticked) review: a real review replaces all samples.
+    On the live theme samples never render.
+
+    Lists are built as indices because Liquid cannot push to an array of
+    blocks.
+  endcomment
+  assign real_idx = ''
+  assign sample_idx = ''
+  for block in section.blocks
+    if block.type == 'review'
+      if block.settings.product == blank or block.settings.product.id == product.id
+        if block.settings.sample
+          assign sample_idx = sample_idx | append: forloop.index0 | append: ','
+        else
+          assign real_idx = real_idx | append: forloop.index0 | append: ','
+        endif
+      endif
+    endif
+  endfor
+  assign real_idx = real_idx | split: ','
+  assign sample_idx = sample_idx | split: ','
+
+  assign review_blocks = section.blocks | where: 'type', 'none'
   assign mode = 'none'
   if app_blocks.size > 0
     assign mode = 'app'
-  elsif review_blocks.size > 0
+  elsif real_idx.size > 0
     assign mode = 'blocks'
+    assign review_blocks = real_idx
+  elsif is_preview and sample_idx.size > 0
+    assign mode = 'samples'
+    assign review_blocks = sample_idx
   elsif s.demo_reviews and is_preview
     assign mode = 'demo'
   endif
@@ -105,7 +119,7 @@
       assign avg = sum | times: 1.0 | divided_by: review_blocks.size | round: 1
       assign total = review_blocks.size
     endif
-  elsif mode == 'demo'
+  elsif mode == 'demo' or mode == 'samples'
     if avg == blank
       capture demo
         render 'sp-demo-rating', id: product.id
@@ -135,13 +149,15 @@
     assign p3 = c3 | times: 100 | divided_by: n
     assign p2 = c2 | times: 100 | divided_by: n
     assign p1 = c1 | times: 100 | divided_by: n
-  elsif mode == 'demo' and avg != blank
+  elsif mode == 'demo' or mode == 'samples'
+    if avg != blank
     assign p5 = avg | times: 1.0 | minus: 4.5 | times: 100 | plus: 52 | round
     assign rest = 100 | minus: p5
     assign p1 = rest | times: 0.04 | round
     assign p2 = rest | times: 0.06 | round
     assign p3 = rest | times: 0.18 | round
     assign p4 = rest | minus: p3 | minus: p2 | minus: p1
+    endif
   endif
 
   assign avg_pct = 0
@@ -213,7 +229,7 @@
 
           {%- comment -%} ---------- Cards ---------- {%- endcomment -%}
           <ul class="sp-rv__grid" role="list">
-            {%- if mode == 'blocks' -%}
+            {%- if mode == 'blocks' or mode == 'samples' -%}
               {%- for i in review_blocks limit: s.max_reviews -%}
                 {%- liquid
                   assign bi = i | plus: 0
@@ -315,6 +331,7 @@
       "limit": 24,
       "settings": [
         { "type": "paragraph", "content": "Add only reviews a real customer gave you, in their words." },
+        { "type": "checkbox", "id": "sample", "label": "Sample review (preview only)", "info": "Ticked: a placeholder for presenting the design. It never shows on the live theme, and disappears from a product as soon as that product has a real review. Untick it once you have typed in a real customer's review.", "default": false },
         { "type": "product", "id": "product", "label": "Product", "info": "The product this review is about. Leave empty to show it on every product page (for a review of the shop itself)." },
         { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
         { "type": "text", "id": "title", "label": "Title" },
