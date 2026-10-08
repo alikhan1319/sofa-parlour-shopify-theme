@@ -240,10 +240,25 @@
     {%- endif -%}
 
     {%- comment -%} 4 — copy {%- endcomment -%}
+    {%- comment -%}
+      The hero is the page's main heading on the home page, so it is the h1
+      there and an h2 anywhere else. With the heading left empty (the
+      watermark carries the brand visually), a visually hidden h1 still
+      gives search engines, AI crawlers and screen readers the page's topic.
+    {%- endcomment -%}
+    {%- liquid
+      assign hero_tag = 'h2'
+      if request.page_type == 'index'
+        assign hero_tag = 'h1'
+      endif
+    -%}
+    {%- if hero_tag == 'h1' and section.settings.heading == blank -%}
+      <h1 class="visually-hidden">{{ shop.name }}{% if shop.description != blank %}: {{ shop.description | escape }}{% else %}: handcrafted sofas delivered across the UK{% endif %}</h1>
+    {%- endif -%}
     {%- if section.settings.text != blank or section.settings.heading != blank or section.settings.button_label != blank -%}
       <div class="sp-hero__copy">
         {%- if section.settings.heading != blank -%}
-          <h2 class="sp-hero__heading">{{ section.settings.heading | escape }}</h2>
+          <{{ hero_tag }} class="sp-hero__heading">{{ section.settings.heading | escape }}</{{ hero_tag }}>
         {%- endif -%}
         {%- if section.settings.text != blank -%}
           <p class="sp-hero__text">{{ section.settings.text | escape }}</p>

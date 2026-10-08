@@ -98,16 +98,33 @@ if blurb == blank
 endif
 
 comment
-  Rating comes only from a real reviews metafield, the one review
-  apps write. It is never derived from the product id: a rating no
-  customer gave is a fabricated review, and publishing one is an
-  offence under the DMCC Act 2024.
+  Rating comes from the real reviews metafield, the one review apps
+  write. A rating no customer gave is a fabricated review, and
+  publishing one is an offence under the DMCC Act 2024.
+
+  The single exception is demo ratings, for showing a client the design
+  before reviews exist. They are locked to non-published themes: on the
+  live (main) theme they never render, whatever the setting says. A real
+  rating always wins over a demo one.
 endcomment
 assign rating = p.metafields.reviews.rating.value
 assign rating_count = p.metafields.reviews.rating_count
-assign rating_pct = 0
+assign rating_value = blank
 if rating != blank
-  assign rating_pct = rating.rating | times: 1.0 | divided_by: 5.0 | times: 100
+  assign rating_value = rating.rating
+elsif card.demo_ratings or settings.demo_ratings
+  capture demo
+    render 'sp-demo-rating', id: p.id
+  endcapture
+  assign demo = demo | strip | split: '|'
+  if demo.size == 2
+    assign rating_value = demo[0]
+    assign rating_count = demo[1]
+  endif
+endif
+assign rating_pct = 0
+if rating_value != blank
+  assign rating_pct = rating_value | times: 1.0 | divided_by: 5.0 | times: 100
 endif
         -%}
 <li class="sp-bs__item" style="--i: {{ index | default: 0 }};" data-sp-reveal>
@@ -182,23 +199,22 @@ endif
 
       <div class="sp-bs__body">
         <div class="sp-bs__row">
-          <h3 class="sp-bs__title"><a href="{{ p.url }}">{{ p.title | escape }}</a></h3>
-          <span class="sp-bs__prices">
-            <span class="sp-bs__pill">{{ v.price | money }}</span>
-            {%- if on_sale -%}
-              <s class="sp-bs__was">{{ v.compare_at_price | money }}</s>
-            {%- endif -%}
-          </span>
+          <h3 class="sp-bs__title"><a href="{{ p.url }}" title="{{ p.title | escape }}">{{ p.title | escape }}</a></h3>
         </div>
 
+        {%- comment -%}
+          Rating on the left, price on the right, one line: keeps the card
+          short. Without a rating the price still sits on the right.
+        {%- endcomment -%}
+        <div class="sp-bs__meta">
         {%- if card.show_rating -%}
           <p class="sp-bs__rating">
-            <span class="sp-bs__stars" style="--pct: {{ rating_pct }}%" role="img" aria-label="Rated {{ rating.rating }} out of 5">
+            <span class="sp-bs__stars" style="--pct: {{ rating_pct }}%" role="img" aria-label="Rated {{ rating_value }} out of 5">
               <span class="sp-bs__stars-track" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
               <span class="sp-bs__stars-fill" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
             </span>
-            {%- if rating != blank -%}
-              <span class="sp-bs__rating-num">{{ rating.rating }}</span>
+            {%- if rating_value != blank -%}
+              <span class="sp-bs__rating-num">{{ rating_value }}</span>
               {%- if rating_count != blank -%}
                 <span class="sp-bs__rating-count">({{ rating_count }})</span>
               {%- endif -%}
@@ -207,6 +223,13 @@ endif
             {%- endif -%}
           </p>
         {%- endif -%}
+          <span class="sp-bs__prices">
+            <span class="sp-bs__pill">{{ v.price | money }}</span>
+            {%- if on_sale -%}
+              <s class="sp-bs__was">{{ v.compare_at_price | money }}</s>
+            {%- endif -%}
+          </span>
+        </div>
 
         {%- if blurb != blank and card.show_blurb -%}
           <p class="sp-bs__blurb">{{ blurb | escape }}</p>

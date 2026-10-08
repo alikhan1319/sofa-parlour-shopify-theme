@@ -170,7 +170,10 @@
 
 .sp-bs__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /*  --sp-bs-cols-m / --sp-bs-cols-t are Best sellers' per-screen settings.
+      Grids that do not set them keep the old behaviour: two on phones,
+      up to three on tablets. */
+  grid-template-columns: repeat(var(--sp-bs-cols-m, 2), minmax(0, 1fr));
   gap: clamp(1.2rem, 1.6vw, 2.4rem);
   margin: 0;
   padding: 0;
@@ -178,7 +181,7 @@
 }
 
 @media (min-width: 750px) {
-  .sp-bs__grid { grid-template-columns: repeat(min(var(--sp-bs-cols, 4), 3), minmax(0, 1fr)); }
+  .sp-bs__grid { grid-template-columns: repeat(var(--sp-bs-cols-t, min(var(--sp-bs-cols, 4), 3)), minmax(0, 1fr)); }
 }
 
 @media (min-width: 1100px) {
@@ -228,6 +231,20 @@
 /* --- Media --- */
 
 .sp-bs__frame { position: relative; perspective: 1000px; }
+
+/*  Photo runs edge to edge across the top of the card.
+
+    The card's side padding framed the image in a white border that read as
+    a gap on either side. Pulling the frame out by that same padding lets the
+    photograph meet the card's edge; the top corners follow the card's own
+    radius (minus its 1px border) so the join is clean. */
+.sp-bs__card > .sp-bs__frame {
+  margin: -1.2rem -1.2rem 0;
+}
+
+.sp-bs__card > .sp-bs__frame .sp-bs__media {
+  border-radius: calc(var(--sp-bs-radius, 18px) + 5px) calc(var(--sp-bs-radius, 18px) + 5px) 0 0;
+}
 
 .sp-bs__media {
   position: relative;
@@ -355,7 +372,7 @@
 
 .sp-bs__row {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
   gap: 1.2rem;
 }
@@ -369,6 +386,15 @@
   line-height: 1.2;
   letter-spacing: -0.015em;
   color: var(--on-card);
+  /*  One line only. A long name wrapping to three lines pushes every card
+      in the row out of step; it is cut with an ellipsis instead, and the
+      full name is on the link's title for hover. min-width: 0 lets it
+      shrink inside the flex row beside the price. */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sp-bs__title a { color: var(--on-card); text-decoration: none; }
@@ -381,14 +407,38 @@
   flex: 0 0 auto;
 }
 
+/*  Rating left, price right, on one line under the title — keeps the card
+    short. The rating gives way first on a narrow card; the price never
+    wraps or shrinks. */
+.sp-bs__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.sp-bs__meta > .sp-bs__rating {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sp-bs__meta > .sp-bs__prices { margin-left: auto; }
+
+/*  A compact brown tag: easy to find at a glance, but slimmer than the old
+    full pill so it does not compete with the photograph. */
 .sp-bs__pill {
   display: inline-flex;
-  align-items: baseline;
-  padding: 0.7rem 1.4rem;
-  border-radius: 999px;
-  background: var(--sp-brass);
+  align-items: center;
+  padding: 0.5rem 1.1rem;
+  border-radius: 0.6rem;
+  background: var(--sp-brass, #9a5d06);
   color: #ffffff;
-  font-size: 1.35rem;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -572,7 +622,7 @@
 @media (max-width: 749px) {
   .sp-bs__head { flex-direction: column; align-items: flex-start; gap: 1.2rem; }
   .sp-bs__title { font-size: 1.45rem; }
-  .sp-bs__pill { font-size: 1.2rem; padding: 0.6rem 1.1rem; }
+  .sp-bs__pill { font-size: 1.3rem; padding: 0.4rem 0.9rem; }
   .sp-bs__blurb { -webkit-line-clamp: 2; }
   .sp-bs__add { min-height: 4.4rem; font-size: 1.2rem; }
 }

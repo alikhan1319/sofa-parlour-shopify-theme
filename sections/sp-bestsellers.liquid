@@ -58,6 +58,8 @@
   data-sp-quickadd-root
   style="
     --sp-bs-cols: {{ section.settings.columns | default: 4 }};
+    --sp-bs-cols-t: {{ section.settings.columns_tablet | default: 3 }};
+    --sp-bs-cols-m: {{ section.settings.columns_mobile | default: 1 }};
     --sp-bs-ratio: {{ section.settings.image_ratio | default: '1 / 1' }};
     --sp-bs-radius: {{ section.settings.radius | default: 18 }}px;
     --sp-bs-pad-t: {{ section.settings.padding_top | default: 72 }}px;
@@ -125,10 +127,23 @@
     { "type": "checkbox", "id": "show_wishlist", "label": "Show the save button", "default": true },
     { "type": "text", "id": "wish_label", "label": "Save button label", "default": "Save for later" },
     { "type": "text", "id": "no_reviews_label", "label": "No-reviews label", "default": "No reviews yet" },
+    { "type": "checkbox", "id": "demo_ratings", "label": "Demo ratings (preview only)", "info": "Shows sample star ratings on products with no reviews, for presenting the design. They never appear on the published live theme. Real reviews always replace them.", "default": false },
     { "type": "checkbox", "id": "show_blurb", "label": "Show a one-line description", "default": true },
     { "type": "checkbox", "id": "tilt", "label": "Tilt the image toward the cursor", "info": "Ignored on touch devices and when reduced motion is requested.", "default": false },
     { "type": "header", "content": "Card" },
-    { "type": "range", "id": "columns", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns", "label": "Products per row on desktop", "info": "Screens 1100px and wider.", "min": 2, "max": 6, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_tablet", "label": "Products per row on tablet", "info": "Screens 750px to 1099px.", "min": 1, "max": 4, "step": 1, "default": 3 },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Products per row on mobile",
+      "info": "Screens under 750px.",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
     {
       "type": "select",
       "id": "image_ratio",

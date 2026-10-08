@@ -1,0 +1,59 @@
+{%- layout none -%}
+{%- comment -%}
+  llms.txt — a plain-text map of the shop for AI assistants (llmstxt.org).
+
+  Shopify themes cannot place a file at the site root, so this is a page
+  template. To publish it:
+    1  Online Store → Pages → Add page, title "llms", template "page.llms".
+    2  Online Store → Navigation → URL redirects: /llms.txt → /pages/llms
+
+  Everything below is generated from the shop's own data, so it stays up
+  to date as products and collections change. The page's own content, if
+  the merchant writes any, is added as an "About" section.
+{%- endcomment -%}
+# {{ shop.name }}
+
+> {% if shop.description != blank %}{{ shop.description | strip_html | strip_newlines }}{% else %}{{ shop.name }} sells handcrafted sofas, corner sofas, sofa beds and armchairs, made to order and delivered across the United Kingdom.{% endif %}
+
+Website: {{ request.origin }}
+{%- if shop.email != blank %}
+Contact: {{ shop.email }}
+{%- endif %}
+Currency: {{ shop.currency }}
+{%- if page.content != blank %}
+
+## About
+
+{{ page.content | strip_html | strip }}
+{%- endif %}
+
+## Collections
+{% for c in collections limit: 50 %}
+{%- if c.products_count > 0 %}
+- [{{ c.title }}]({{ request.origin }}{{ c.url }}){% if c.description != blank %}: {{ c.description | strip_html | strip_newlines | truncate: 160 }}{% endif %}
+{%- endif %}
+{%- endfor %}
+
+## Products
+{% paginate collections.all.products by 250 %}
+{%- for p in collections.all.products %}
+- [{{ p.title }}]({{ request.origin }}{{ p.url }}): {{ p.price | money_without_currency | strip_html }} {{ shop.currency }}{% unless p.available %} (sold out){% endunless %}{% assign d = p.description | strip_html | strip_newlines | strip %}{% if d != blank %}. {{ d | truncate: 180 }}{% endif %}
+{%- endfor %}
+{% endpaginate %}
+
+## Information
+{%- assign info_handles = 'about,about-us,contact,delivery,faq,showroom,care' | split: ',' %}
+{%- for handle in info_handles %}
+{%- assign info_page = pages[handle] %}
+{%- if info_page != blank and info_page.url != blank %}
+- [{{ info_page.title }}]({{ request.origin }}{{ info_page.url }})
+{%- endif %}
+{%- endfor %}
+{%- for policy in shop.policies %}
+- [{{ policy.title }}]({{ request.origin }}{{ policy.url }})
+{%- endfor %}
+
+## Optional
+
+- [Search]({{ request.origin }}{{ routes.search_url }}?q=sofa)
+- [Sitemap]({{ request.origin }}/sitemap.xml)

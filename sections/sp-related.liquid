@@ -43,7 +43,7 @@
 
 <section
   class="sp-bs"
-  style="--sp-bs-pad-t: {{ s.padding_top }}px; --sp-bs-pad-b: {{ s.padding_bottom }}px; --sp-bs-cols: {{ cols }}; --sp-bs-ratio: {{ s.image_ratio }}; --sp-bs-radius: {{ s.radius }}px;{% if s.image_fit == 'cover' %} --sp-bs-fit: cover; --sp-bs-fit-pad: 0;{% endif %}"
+  style="--sp-bs-pad-t: {{ s.padding_top }}px; --sp-bs-pad-b: {{ s.padding_bottom }}px; --sp-bs-cols: {{ cols }}; --sp-rl-cols-t: {{ s.columns_tablet | default: 2 }}; --sp-rl-cols-m: {{ s.columns_mobile | default: 1 }}; --sp-bs-ratio: {{ s.image_ratio }}; --sp-bs-radius: {{ s.radius }}px;{% if s.image_fit == 'cover' %} --sp-bs-fit: cover; --sp-bs-fit-pad: 0;{% endif %}"
 >
   {%- comment -%}
     data-sp-quickadd-root is what makes Add to basket on these cards post to
@@ -154,7 +154,28 @@
       "max": 5,
       "step": 1,
       "default": 4,
-      "info": "How many fit before the rail scrolls."
+      "info": "How many fit before the rail scrolls. Screens 990px and wider."
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Cards in view on tablet",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2,
+      "info": "Screens 600px to 989px."
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Cards in view on mobile",
+      "info": "Screens under 600px. A slice of the next card always shows, so shoppers know to swipe.",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
     },
     {
       "type": "select",

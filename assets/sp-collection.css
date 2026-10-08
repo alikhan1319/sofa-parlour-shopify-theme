@@ -445,3 +445,12 @@
     order: 3;
   }
 }
+
+/*  Product count. Dawn's .light fades it to 70% on top of the muted text
+    colour, which measured 2.73:1 on white and fails WCAG AA (4.5:1). Full
+    opacity at ink-72 measures 6.8:1. */
+.product-count.light,
+.product-count-vertical.light {
+  opacity: 1;
+  color: rgba(31, 26, 22, 0.72);
+}

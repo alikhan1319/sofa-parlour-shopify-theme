@@ -19,6 +19,12 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
       <link rel="icon" type="image/png" sizes="192x192" href="{{ settings.favicon | image_url: width: 192, height: 192 }}">
       <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- else -%}
+      {%- comment -%}
+        No favicon uploaded yet: an inline monogram, so the browser does not
+        request /favicon.ico and log a 404 on every page.
+      {%- endcomment -%}
+      <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f1a16'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' text-anchor='middle' fill='%23c9a227'%3E{{ shop.name | slice: 0 | upcase | url_encode }}%3C/text%3E%3C/svg%3E">
     {%- endif -%}
 
     {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
@@ -32,11 +38,31 @@
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
-    {% endif %}
+    {%- comment -%}
+      Every page gets a description. Shopify fills page_description from the
+      product, collection or page SEO fields; where the merchant has left
+      those empty, fall back to the shop description, then to a line that
+      says what the shop sells, so no page ships with none.
+    {%- endcomment -%}
+    {%- liquid
+      assign meta_description = page_description
+      if meta_description == blank and request.page_type == 'product'
+        assign meta_description = product.description | strip_html | strip_newlines | strip | truncate: 160
+      endif
+      if meta_description == blank and request.page_type == 'collection'
+        assign meta_description = collection.description | strip_html | strip_newlines | strip | truncate: 160
+      endif
+      if meta_description == blank
+        assign meta_description = shop.description
+      endif
+      if meta_description == blank
+        assign meta_description = shop.name | append: ': handcrafted sofas, corner sofas, sofa beds and armchairs, made to order and delivered free across the UK.'
+      endif
+    -%}
+    <meta name="description" content="{{ meta_description | strip_html | escape | truncate: 300 }}">
 
     {% render 'meta-tags' %}
+    {% render 'sp-structured-data' %}
 
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
@@ -56,7 +82,14 @@
     {%- endcomment -%}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap">
+    {%- comment -%}
+      Loaded without blocking the first paint: the stylesheet is preloaded
+      and switched on when it arrives. display=swap already shows the
+      fallback face meanwhile, so nothing is invisible while it loads.
+    {%- endcomment -%}
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap"></noscript>
 
     {%- liquid
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
@@ -327,8 +360,10 @@
       };
     </script>
 
-    {%- if settings.predictive_search_enabled -%}
-      <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
-    {%- endif -%}
+    {%- comment -%}
+      predictive-search.js is loaded by sections/sp-header.liquid, after
+      search-form.js which it extends. Loading it here as well declared the
+      class twice and threw a SyntaxError on every page.
+    {%- endcomment -%}
   </body>
 </html>

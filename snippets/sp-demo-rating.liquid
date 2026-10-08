@@ -1,0 +1,24 @@
+{%- comment -%}
+  Demo rating for one product, for presenting the design before any
+  reviews exist. Outputs "rating|count", or nothing.
+
+  Shared by the product card and the product page so a product shows the
+  same numbers in both places. Derived from the product id, so it is
+  stable from load to load.
+
+  LOCKED to non-published themes: on the live (main) theme this renders
+  nothing, whatever the setting says. A rating no customer gave is a
+  fabricated review, and publishing one is an offence under the UK DMCC
+  Act 2024. Callers check for a real reviews metafield first; this is only
+  the fallback.
+
+  Usage: {%- capture demo -%}{% render 'sp-demo-rating', id: product.id %}{%- endcapture -%}
+{%- endcomment -%}
+{%- if theme.role != 'main' and id != blank -%}
+  {%- liquid
+    assign demo_values = '4.5,4.8,4.6,4.9,4.7,4.8' | split: ','
+    assign demo_i = id | modulo: 13 | modulo: 6
+    assign demo_count = id | modulo: 87 | plus: 14
+  -%}
+  {{- demo_values[demo_i] }}|{{ demo_count -}}
+{%- endif -%}

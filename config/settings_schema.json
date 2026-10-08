@@ -1562,5 +1562,17 @@
         "info": "t:settings_schema.cart.settings.cart_drawer.collection.info"
       }
     ]
+  },
+  {
+    "name": "Reviews",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "demo_ratings",
+        "label": "Demo ratings on every product (preview only)",
+        "info": "Shows sample star ratings on all product cards and product pages that have no reviews, for presenting the design. They never appear on the published live theme. Real reviews always replace them.",
+        "default": false
+      }
+    ]
   }
 ]

@@ -1,0 +1,277 @@
+/* ============================================================
+   Sofa Parlour — Customer reviews
+   ============================================================
+
+   Same palette and treatment as Features and Questions (sp-blocks.css):
+   hairline borders, near-sharp corners, brass for the stars. Summary on
+   the left, cards on the right; stacked below 900px.
+   ============================================================ */
+
+.sp-rv {
+  --rv-ground: #ffffff;
+  --rv-raised: #f6f3ee;
+  --rv-ink: #1f1a16;
+  --rv-ink-2: rgba(31, 26, 22, 0.72);
+  --rv-ink-3: rgba(31, 26, 22, 0.62);
+  --rv-line: rgba(31, 26, 22, 0.12);
+  --rv-accent: #9a5d06;
+  --rv-r: 0.4rem;
+  --rv-gut: clamp(1.6rem, 4vw, 4.8rem);
+
+  padding: var(--sp-rv-pad-t, 88px) 0 var(--sp-rv-pad-b, 88px);
+  color: var(--rv-ink);
+}
+
+.sp-rv--ground { background-color: var(--rv-ground); }
+.sp-rv--raised { background-color: var(--rv-raised); }
+
+.sp-rv__inner {
+  max-width: 132rem;
+  margin: 0 auto;
+  padding: 0 var(--rv-gut);
+}
+
+/* --- Head --- */
+
+.sp-rv__head { margin-bottom: clamp(2.4rem, 4vw, 4.8rem); }
+
+.sp-rv__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.2rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rv-ink-3);
+}
+
+.sp-rv__eyebrow::before {
+  content: '';
+  width: 3.2rem;
+  height: 1px;
+  background-color: var(--rv-accent);
+}
+
+.sp-rv__heading {
+  margin: 0;
+  font-family: inherit;
+  font-size: clamp(2.4rem, 3.4vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* --- Layout --- */
+
+.sp-rv__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.4rem, 4vw, 5.6rem);
+}
+
+@media (min-width: 900px) {
+  .sp-rv__layout {
+    grid-template-columns: minmax(24rem, 0.32fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .sp-rv__summary { position: sticky; top: 2.4rem; }
+}
+
+/* --- Stars (shared) --- */
+
+.sp-rv__stars {
+  position: relative;
+  display: inline-block;
+  font-size: 1.4rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.sp-rv__stars-track { color: rgba(31, 26, 22, 0.18); }
+
+.sp-rv__stars-fill {
+  position: absolute;
+  inset: 0;
+  width: var(--pct, 0%);
+  overflow: hidden;
+  color: var(--rv-accent);
+}
+
+.sp-rv__stars--lg { font-size: 2.2rem; }
+
+/* --- Summary --- */
+
+.sp-rv__summary {
+  padding: clamp(2rem, 3vw, 3.2rem);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-r);
+  background: var(--rv-raised);
+}
+
+.sp-rv--raised .sp-rv__summary { background: var(--rv-ground); }
+
+.sp-rv__avg {
+  margin: 0 0 0.8rem;
+  font-size: clamp(4.8rem, 6vw, 6.4rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.sp-rv__avg-of {
+  margin-left: 0.4rem;
+  font-size: 0.35em;
+  letter-spacing: 0;
+  color: var(--rv-ink-3);
+}
+
+.sp-rv__based {
+  margin: 1rem 0 2rem;
+  font-size: 1.35rem;
+  color: var(--rv-ink-2);
+}
+
+.sp-rv__bars {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sp-rv__bar {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr) 3.8rem;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.25rem;
+  color: var(--rv-ink-2);
+}
+
+.sp-rv__bar-track {
+  height: 0.6rem;
+  border-radius: 999px;
+  background: var(--rv-line);
+  overflow: hidden;
+}
+
+.sp-rv__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rv-accent);
+}
+
+.sp-rv__bar-pct { text-align: right; }
+
+/* --- Cards --- */
+
+.sp-rv__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.2rem, 1.6vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 750px) {
+  .sp-rv__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.sp-rv__card { min-width: 0; }
+
+.sp-rv__review {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  height: 100%;
+  padding: clamp(1.8rem, 2.4vw, 2.6rem);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-r);
+  background: var(--rv-ground);
+}
+
+.sp-rv--raised .sp-rv__review { background: var(--rv-ground); }
+
+.sp-rv__review-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sp-rv__when { font-size: 1.2rem; color: var(--rv-ink-3); }
+
+.sp-rv__title {
+  margin: 0;
+  font-family: inherit;
+  font-size: 1.7rem;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.sp-rv__body {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.6;
+  color: var(--rv-ink-2);
+}
+
+.sp-rv__who {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: auto;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rv-line);
+}
+
+.sp-rv__avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: 50%;
+  background: var(--rv-ink);
+  color: #f6f3ee;
+  font-size: 1.4rem;
+}
+
+.sp-rv__who-text { display: grid; gap: 0.2rem; min-width: 0; }
+
+.sp-rv__name { font-size: 1.4rem; }
+
+.sp-rv__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 1.2rem;
+  color: var(--rv-ink-3);
+}
+
+.sp-rv__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--rv-accent);
+}
+
+/* --- Reveal (gated on html.js, as in sp-blocks.css) --- */
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .sp-rv[data-sp-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 620ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  html.js .sp-rv[data-sp-reveal].is-in { opacity: 1; transform: none; }
+}
+
+@media (max-width: 749px) {
+  .sp-rv__title { font-size: 1.55rem; }
+  .sp-rv__body { font-size: 1.35rem; }
+}

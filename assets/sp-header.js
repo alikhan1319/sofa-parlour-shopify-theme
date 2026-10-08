@@ -175,6 +175,18 @@
         btn.addEventListener('click', function () { setDrawer(false); });
       });
 
+      // Cart from inside the menu: close the menu, then open Dawn's cart
+      // drawer where there is one. With no drawer the link just goes to /cart.
+      drawer.querySelectorAll('[data-sp-hd-cart]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          var cartDrawer = document.querySelector('cart-drawer');
+          if (!cartDrawer || typeof cartDrawer.open !== 'function') return;
+          e.preventDefault();
+          setDrawer(false);
+          cartDrawer.open();
+        });
+      });
+
       drawer.querySelectorAll('[data-sp-hd-acc-toggle]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var item = btn.closest('.sp-hd__drawer-item');

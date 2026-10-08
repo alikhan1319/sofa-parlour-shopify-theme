@@ -951,8 +951,13 @@
   /*  The wordmark leads on mobile and the search drops to its own line,
       so the field keeps a usable width instead of being squeezed into a
       third of the bar.                                                  */
+  /*  Menu | logo | account. The two outer columns are equal (1fr each), so
+      the logo sits on the true centre of the bar however wide the burger
+      and account button are. Loved and Basket move into the menu drawer
+      (.sp-hd__drawer-shop) — three small icons on the right pulled the
+      logo off centre and crowded it.                                     */
   .sp-hd__main-inner {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     grid-template-areas:
       'burger mark utils'
       'search search search';
@@ -961,14 +966,82 @@
   }
 
   .sp-hd__lead { display: contents; }
-  .sp-hd__burger { grid-area: burger; }
+  .sp-hd__burger { grid-area: burger; justify-self: start; }
   .sp-hd__loc { display: none; }
   .sp-hd__search { grid-area: search; max-width: none; flex: none; }
-  .sp-hd__mark { grid-area: mark; grid-column: auto; }
-  .sp-hd__utils { grid-area: utils; }
-  .sp-hd__account { height: 3.8rem; padding: 0 1.4rem; }
+  .sp-hd__mark { grid-area: mark; grid-column: auto; justify-self: center; }
+  .sp-hd__mark-img { max-width: 15rem; }
+  .sp-hd__utils { grid-area: utils; justify-self: end; }
+  .sp-hd__utils > .sp-hd__util { display: none; }
+
+  /*  Account as a round icon the same size as the burger, so the bar is
+      symmetrical. */
+  .sp-hd__account {
+    justify-content: center;
+    width: 4.2rem;
+    height: 4.2rem;
+    padding: 0;
+  }
+  .sp-hd__account svg { width: 18px; height: 18px; }
   .sp-hd__account span { display: none; }
 }
+
+/*  Loved and Basket inside the menu drawer: small screens only, since on
+    desktop they are in the header bar already. */
+.sp-hd__drawer-shop {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1.6rem 2.4rem;
+  border-top: 1px solid var(--sp-line-soft);
+}
+
+@media (min-width: 990px) {
+  .sp-hd__drawer-shop { display: none; }
+}
+
+.sp-hd__drawer-shoplink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  height: 4.8rem;
+  padding: 0 1.6rem;
+  border: 1px solid var(--sp-line);
+  border-radius: 999px;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: var(--sp-fg);
+  text-decoration: none;
+  transition: border-color var(--sp-tint) var(--sp-ease),
+    background var(--sp-tint) var(--sp-ease);
+}
+
+.sp-hd__drawer-shoplink:hover {
+  border-color: var(--sp-brass);
+  background: rgba(154, 93, 6, 0.08);
+}
+
+.sp-hd__drawer-shoplink svg { flex: 0 0 auto; }
+
+.sp-hd__drawer-shoplink .sp-wl-badge,
+.sp-hd__drawer-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--sp-brass);
+  color: var(--sp-bg);
+  font-size: 1.1rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sp-hd__drawer-shoplink .sp-wl-badge { position: static; }
+.sp-hd__drawer-shoplink .sp-wl-badge[hidden] { display: none; }
 
 /* ============================================================
    Sticky

@@ -195,6 +195,7 @@
 .sp-qv__rating { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: 1.25rem; }
 .sp-qv__stars { position: relative; display: inline-block; font-size: 1.3rem; line-height: 1; letter-spacing: 0.1em; }
 .sp-qv__stars-track { color: rgba(31, 26, 22, 0.16); }
+.sp-qv__rating-num { font-weight: 600; }
 
 .sp-qv__stars-fill {
   position: absolute;

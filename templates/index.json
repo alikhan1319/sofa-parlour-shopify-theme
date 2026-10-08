@@ -10,23 +10,24 @@
         "show_sparks": true,
         "image_alt": "",
         "overlay_opacity": 0,
-        "watermark_text": "FreshMart",
+        "watermark_text": "Sofa Parlour",
         "watermark_opacity": 100,
         "watermark_offset": 6,
         "watermark_inset": 4,
         "foreground_alt": "",
-        "badge_text": "Same Day Delivery",
+        "badge_text": "Free UK Delivery",
         "badge_rotate": -12,
         "heading": "",
-        "text": "Shop from thousands of farm-fresh fruits, vegetables, dairy, and daily essentials at unbeatable prices.",
-        "button_label": "Shop Now",
-        "button_link": "",
+        "text": "Handcrafted sofas, corner sofas, sofa beds and armchairs, made to order in your choice of fabric and delivered free across the UK.",
+        "button_label": "Shop sofas",
+        "button_link": "shopify://collections/all",
         "palette": "champagne",
         "text_scheme": "dark"
       }
     },
     "image-banner": {
       "type": "image-banner",
+      "disabled": true,
       "blocks": {
         "heading": {
           "type": "heading",
@@ -57,10 +58,12 @@
     },
     "featured-collection": {
       "type": "featured-collection",
+      "disabled": true,
       "settings": {}
     },
     "rich-text": {
       "type": "rich-text",
+      "disabled": true,
       "blocks": {
         "heading": {
           "type": "heading",
@@ -88,8 +91,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "Everyday",
-            "heading": "Personal Care",
+            "label": "Living room",
+            "heading": "3 Seater Sofas",
             "tint": "#f0e9dd",
             "button_label": "Shop now"
           }
@@ -98,8 +101,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "Wardrobe",
-            "heading": "Fashion",
+            "label": "Room to spread out",
+            "heading": "Corner Sofas",
             "tint": "#4a3f35"
           }
         },
@@ -107,8 +110,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "The Home",
-            "heading": "Kitchen",
+            "label": "Guest ready",
+            "heading": "Sofa Beds",
             "tint": "#c9a227"
           }
         },
@@ -116,8 +119,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "The Home",
-            "heading": "Appliances",
+            "label": "Classic",
+            "heading": "Chesterfield Sofas",
             "tint": "#5a4334"
           }
         },
@@ -125,8 +128,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "Tech",
-            "heading": "Gadgets",
+            "label": "Reading corner",
+            "heading": "Armchairs",
             "tint": "#e8dcc2"
           }
         },
@@ -134,8 +137,8 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "label": "All",
-            "heading": "Everything",
+            "label": "Full range",
+            "heading": "All Sofas",
             "tint": "#6b5744",
             "button_label": "Shop now"
           }
@@ -151,8 +154,8 @@
       ],
       "settings": {
         "eyebrow": "Browse",
-        "heading": "Shop by category",
-        "text": "",
+        "heading": "Shop sofas by style",
+        "text": "From compact two-seaters to generous corner sofas and sofa beds, find the right shape for your room.",
         "align": "start",
         "button_label": "Shop now",
         "default_tints": "#f0e9dd,#4a3f35,#c9a227,#5a4334,#e8dcc2,#6b5744",
@@ -200,9 +203,9 @@
         "heading": "Your favourite seat is waiting",
         "text": "Discover the sofas everyone comes back to. Made to order, delivered to the room of your choice.",
         "button_label": "Shop best sellers",
-        "button_link": "",
+        "button_link": "shopify://collections/all",
         "link_label": "Book a showroom visit",
-        "link_url": "",
+        "link_url": "shopify://pages/contact",
         "image_alt": "",
         "badge_text": "Most loved",
         "image_ratio": "4 / 3",
@@ -210,7 +213,7 @@
         "scheme": "espresso",
         "padding_top": 0,
         "padding_bottom": 0,
-        "image_fit": "contain",
+        "image_fit": "natural",
         "row_height": 520,
         "media_inset": 32
       }
@@ -222,11 +225,14 @@
         "heading": "Best sellers",
         "link_label": "View all",
         "link_url": "",
-        "collection": "",
+        "collection": "all",
         "products_to_show": 4,
         "columns": 4,
+        "columns_tablet": 3,
+        "columns_mobile": "1",
         "image_ratio": "1 / 1",
-        "image_fit": "contain",
+        "image_fit": "cover",
+        "demo_ratings": true,
         "radius": 18,
         "add_label": "Add to cart",
         "options_label": "Choose options",

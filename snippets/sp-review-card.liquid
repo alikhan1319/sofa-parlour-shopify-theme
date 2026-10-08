@@ -1,0 +1,44 @@
+{%- comment -%}
+  One review card, for the Customer reviews section.
+  Params: pct (0–100 star fill), rating, title, body, author, place, when, verified
+{%- endcomment -%}
+<article class="sp-rv__review">
+  <div class="sp-rv__review-top">
+    <span class="sp-rv__stars" style="--pct: {{ pct }}%" role="img" aria-label="Rated {{ rating }} out of 5">
+      <span class="sp-rv__stars-track" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="sp-rv__stars-fill" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+    </span>
+    {%- if when != blank -%}
+      <span class="sp-rv__when">{{ when | escape }}</span>
+    {%- endif -%}
+  </div>
+
+  {%- if title != blank -%}
+    <h3 class="sp-rv__title">{{ title | escape }}</h3>
+  {%- endif -%}
+  {%- if body != blank -%}
+    <p class="sp-rv__body">{{ body | escape | newline_to_br }}</p>
+  {%- endif -%}
+
+  {%- if author != blank -%}
+    <footer class="sp-rv__who">
+      <span class="sp-rv__avatar" aria-hidden="true">{{ author | slice: 0 | upcase }}</span>
+      <span class="sp-rv__who-text">
+        <span class="sp-rv__name">{{ author | escape }}</span>
+        {%- if place != blank or verified -%}
+          <span class="sp-rv__meta">
+            {%- if verified -%}
+              <span class="sp-rv__verified">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Verified buyer
+              </span>
+            {%- endif -%}
+            {%- if place != blank -%}
+              <span>{{ place | escape }}</span>
+            {%- endif -%}
+          </span>
+        {%- endif -%}
+      </span>
+    </footer>
+  {%- endif -%}
+</article>

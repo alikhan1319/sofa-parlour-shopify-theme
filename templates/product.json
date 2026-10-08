@@ -80,7 +80,21 @@
         "s2",
         "s3"
       ],
-      "settings": {}
+      "settings": {
+        "demo_ratings": true
+      }
+    },
+    "reviews": {
+      "type": "sp-reviews",
+      "settings": {
+        "eyebrow": "Customer reviews",
+        "heading": "What our customers say",
+        "max_reviews": 6,
+        "demo_reviews": true,
+        "scheme": "ground",
+        "padding_top": 88,
+        "padding_bottom": 88
+      }
     },
     "layers": {
       "type": "sp-layers",
@@ -240,6 +254,7 @@
   "order": [
     "main",
     "features",
+    "reviews",
     "layers",
     "showcase",
     "faq",

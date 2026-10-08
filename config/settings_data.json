@@ -3,6 +3,7 @@
   "presets": {
     "Default": {
       "logo_width": 140,
+      "demo_ratings": true,
       "colors_solid_button_labels": "#ffffff",
       "colors_accent_1": "#1f1a16",
       "gradient_accent_1": "",

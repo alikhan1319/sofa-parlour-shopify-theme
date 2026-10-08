@@ -46,6 +46,10 @@
     --sp-split-inset: {{ section.settings.media_inset | default: 32 }}px;
     --sp-split-pad-t: {{ section.settings.padding_top | default: 0 }}px;
     --sp-split-pad-b: {{ section.settings.padding_bottom | default: 0 }}px;
+    {%- if img_d != blank %}
+    --sp-split-natural-d: {{ img_d.aspect_ratio }};
+    --sp-split-natural-m: {{ img_m.aspect_ratio | default: img_d.aspect_ratio }};
+    {%- endif %}
   "
 >
   <div class="sp-split__inner">
@@ -189,12 +193,13 @@
       "type": "select",
       "id": "image_fit",
       "label": "Image fit",
-      "info": "Contain shows the whole photograph. Cover fills the frame and crops.",
+      "info": "Original uses the photo's own shape: no empty space, no cropping. Contain shows the whole photograph inside the frame. Cover fills the frame and crops.",
       "options": [
+        { "value": "natural", "label": "Original image shape" },
         { "value": "contain", "label": "Show the whole image" },
         { "value": "cover", "label": "Fill the frame" }
       ],
-      "default": "contain"
+      "default": "natural"
     },
     { "type": "range", "id": "row_height", "label": "Section height", "min": 360, "max": 760, "step": 20, "unit": "px", "default": 520 },
     { "type": "range", "id": "media_inset", "label": "Space around the image", "info": "Set to 0 to let the image run to the edge of the screen.", "min": 0, "max": 64, "step": 4, "unit": "px", "default": 32 },

@@ -24,7 +24,8 @@
 {%- endcomment -%}
 
 {{ 'sp-header.css' | asset_url | stylesheet_tag }}
-{{ 'sp-wishlist-drawer.css' | asset_url | stylesheet_tag }}
+{%- comment -%} The saved-items drawer is built only when first opened, so its styles need not block the first paint. {%- endcomment -%}
+<link rel="stylesheet" href="{{ 'sp-wishlist-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 <script src="{{ 'sp-wishlist.js' | asset_url }}" defer="defer"></script>
 {%- comment -%}
   The saved-items drawer exists on every page, and its rows carry a real
@@ -42,12 +43,18 @@
 {%- endif -%}
 
 <link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- comment -%}
+  component-cart-drawer.css stays blocking: it is what keeps the closed
+  drawer hidden, so deferring it would flash the drawer's contents on load.
+  What styles the INSIDE of the drawer is not needed for first paint and
+  loads without blocking it.
+{%- endcomment -%}
 {%- if settings.cart_type == 'drawer' -%}
   {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-  {{ 'component-cart.css' | asset_url | stylesheet_tag }}
-  {{ 'component-totals.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}" media="print" onload="this.media='all'">
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
-  {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}" media="print" onload="this.media='all'">
   <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
@@ -114,7 +121,7 @@
                 value="{{ search.terms | escape }}"
                 placeholder="{{ section.settings.search_placeholder | default: 'Search' | escape }}"
                 data-sp-hd-search-input
-                {%- if settings.predictive_search_enabled -%}
+                {% if settings.predictive_search_enabled -%}
                   role="combobox"
                   aria-expanded="false"
                   aria-owns="predictive-search-results"
@@ -231,6 +238,7 @@
           <a
             href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
             class="sp-hd__account"
+            aria-label="{% if customer %}{{ 'customer.account_fallback' | t }}{% else %}{{ section.settings.account_label | default: 'Login/Signup' | escape }}{% endif %}"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
               <circle cx="12" cy="8.5" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round"/>
@@ -507,6 +515,40 @@
         </ul>
       {%- endif -%}
     </nav>
+
+    {%- comment -%}
+      Saved items and basket. On small screens these leave the header bar
+      (which keeps only menu, logo and account) and live here instead.
+      Wishlist opens through sp-wishlist.js's document-level listener;
+      data-sp-hd-drawer-close shuts this menu first.
+    {%- endcomment -%}
+    <div class="sp-hd__drawer-shop">
+      {%- if section.settings.show_wishlist -%}
+        <a
+          href="{{ section.settings.wishlist_link | default: '#' }}"
+          class="sp-hd__drawer-shoplink"
+          data-sp-wishlist-open
+          data-sp-hd-drawer-close
+        >
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M12 20s-7-4.6-7-9.3A4.2 4.2 0 0 1 12 8a4.2 4.2 0 0 1 7 2.7C19 15.4 12 20 12 20Z" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ section.settings.wishlist_label | default: 'Loved' | escape }}</span>
+          <span class="sp-wl-badge" data-sp-wl-count hidden>0</span>
+        </a>
+      {%- endif -%}
+      <a href="{{ routes.cart_url }}" class="sp-hd__drawer-shoplink" data-sp-hd-cart>
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M7 8h12l-1.2 8.2a1.5 1.5 0 0 1-1.5 1.3H9.4a1.5 1.5 0 0 1-1.5-1.25L6.2 5.4A1 1 0 0 0 5.2 4.5H3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="20" r="1.15" fill="currentColor" stroke="none"/>
+          <circle cx="17" cy="20" r="1.15" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>{{ 'templates.cart.cart' | t }}</span>
+        {%- if cart.item_count > 0 -%}
+          <span class="sp-hd__drawer-count">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
 
     {%- if shop.customer_accounts_enabled -%}
       <div class="sp-hd__drawer-foot">

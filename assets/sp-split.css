@@ -284,6 +284,29 @@
 .sp-split--surface.sp-split--contain { --sp-mount: var(--sp-espresso); }
 .sp-split--cream.sp-split--contain { --sp-mount: #f6f3ee; }
 
+/*  Original shape: the frame takes the photograph's own aspect ratio, so
+    the picture fills it exactly — no mount showing round the edges and
+    nothing cropped. On desktop the panel no longer stretches to the row;
+    it sits centred against the copy at the height its width gives it. */
+.sp-split--natural .sp-split__media {
+  aspect-ratio: var(--sp-split-natural-m, var(--sp-split-ratio, 4 / 3));
+  background: none;
+}
+
+.sp-split--natural .sp-split__img {
+  object-fit: cover;
+  padding: 0;
+}
+
+@media (min-width: 900px) {
+  .sp-split--natural .sp-split__inner { min-height: 0; }
+
+  .sp-split--natural .sp-split__media {
+    aspect-ratio: var(--sp-split-natural-d, var(--sp-split-ratio, 4 / 3));
+    align-self: center;
+  }
+}
+
 .sp-split__ph { background: linear-gradient(150deg, var(--sp-surface), var(--sp-espresso)); }
 
 /*  The panel is inset from the viewport rather than bleeding off it, so it
@@ -359,4 +382,15 @@
   .sp-split__btn { height: 4.8rem; padding: 0 2.4rem; }
   .sp-split__ghost { height: 4.8rem; padding-left: 1.8rem; }
   .sp-split__ghost-arrow { width: 3.4rem; height: 3.4rem; }
+
+  /*  The badge keeps its desktop size otherwise, and on a phone-width
+      picture that is a large slab over the photograph. Smaller pill,
+      tighter to the corner. */
+  .sp-split__badge {
+    top: 1rem;
+    inset-inline-end: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
 }

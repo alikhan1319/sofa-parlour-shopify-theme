@@ -246,6 +246,16 @@
 }
 
 .sp-pd__rating { display: inline-flex; align-items: center; gap: 0.6rem; }
+
+/*  Above the title: its own line, a touch larger so it reads at a glance. */
+.sp-pd__rating--top {
+  display: flex;
+  margin: 0 0 0.8rem;
+  font-size: 1.4rem;
+  color: var(--pd-ink-2, inherit);
+}
+.sp-pd__rating--top .sp-pd__stars { font-size: 1.6rem; }
+.sp-pd__rating-num { font-weight: 600; }
 .sp-pd__stars { position: relative; display: inline-block; font-size: 1.3rem; line-height: 1; letter-spacing: 0.1em; }
 .sp-pd__stars-track { color: rgba(31, 26, 22, 0.20); }
 

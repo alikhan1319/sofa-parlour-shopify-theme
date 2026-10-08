@@ -175,16 +175,22 @@ product-recommendations {
   scroll-snap-align: start;
 }
 
+/*  Tablet and mobile follow the section's own settings. On mobile the
+    count is shaved by a fifth of a card (0.22) so a sliver of the next
+    card always shows and the row reads as scrollable. */
 @media (max-width: 989px) {
   .sp-rl__rail > .sp-bs__item {
-    width: calc((100% - 1.2rem) / 2);
+    width: calc(
+      (100% - (var(--sp-rl-cols-t, 2) - 1) * 1.2rem) / var(--sp-rl-cols-t, 2)
+    );
   }
 }
 
 @media (max-width: 599px) {
   .sp-rl__rail > .sp-bs__item {
-    /* A sliver of the next card, so the row reads as scrollable */
-    width: 78%;
+    width: calc(
+      (100% - var(--sp-rl-cols-m, 1) * 1.2rem) / (var(--sp-rl-cols-m, 1) + 0.22)
+    );
   }
 
   .sp-rl__head {

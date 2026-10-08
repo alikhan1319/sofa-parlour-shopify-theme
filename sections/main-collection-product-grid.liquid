@@ -170,7 +170,7 @@
               id="product-grid"
               data-id="{{ section.id }}"
               class="sp-bs__grid"
-              style="--sp-bs-cols: {{ section.settings.columns_desktop }}; --sp-bs-ratio: {{ section.settings.image_ratio }}; --sp-bs-radius: {{ section.settings.radius }}px;{% if section.settings.image_fit == 'cover' %} --sp-bs-fit: cover; --sp-bs-fit-pad: 0;{% endif %}"
+              style="--sp-bs-cols: {{ section.settings.columns_desktop }}; --sp-bs-cols-t: {{ section.settings.columns_tablet | default: 3 }}; --sp-bs-cols-m: {{ section.settings.columns_mobile | default: 1 }}; --sp-bs-ratio: {{ section.settings.image_ratio }}; --sp-bs-radius: {{ section.settings.radius }}px;{% if section.settings.image_fit == 'cover' %} --sp-bs-fit: cover; --sp-bs-fit-pad: 0;{% endif %}"
               role="list"
             >
               {%- for product in collection.products -%}
@@ -206,10 +206,21 @@
       "type": "range",
       "id": "columns_desktop",
       "min": 1,
-      "max": 5,
+      "max": 6,
       "step": 1,
       "default": 4,
-      "label": "t:sections.main-collection-product-grid.settings.columns_desktop.label"
+      "label": "Products per row on desktop",
+      "info": "Screens 1100px and wider."
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "label": "Products per row on tablet",
+      "info": "Screens 750px to 1099px."
     },
     {
       "type": "header",
@@ -394,8 +405,9 @@
     {
       "type": "select",
       "id": "columns_mobile",
-      "default": "2",
-      "label": "t:sections.main-collection-product-grid.settings.columns_mobile.label",
+      "default": "1",
+      "label": "Products per row on mobile",
+      "info": "Screens under 750px.",
       "options": [
         {
           "value": "1",

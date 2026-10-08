@@ -52,9 +52,26 @@
 
   assign rating = product.metafields.reviews.rating.value
   assign rating_count = product.metafields.reviews.rating_count
-  assign rating_pct = 0
+  assign rating_value = blank
   if rating != blank
-    assign rating_pct = rating.rating | times: 1.0 | divided_by: 5.0 | times: 100
+    assign rating_value = rating.rating
+  elsif settings.demo_ratings
+    comment
+      Same demo numbers as the card and product page (sp-demo-rating), which
+      renders nothing on the published theme.
+    endcomment
+    capture demo
+      render 'sp-demo-rating', id: product.id
+    endcapture
+    assign demo = demo | strip | split: '|'
+    if demo.size == 2
+      assign rating_value = demo[0]
+      assign rating_count = demo[1]
+    endif
+  endif
+  assign rating_pct = 0
+  if rating_value != blank
+    assign rating_pct = rating_value | times: 1.0 | divided_by: 5.0 | times: 100
   endif
 
   assign blurb = product.metafields.custom.short_description.value | default: product.metafields.custom.short_description
@@ -199,20 +216,21 @@
       <p class="sp-qv__type">{{ product.type | escape }}</p>
     {%- endif -%}
 
-    <h2 class="sp-qv__title">{{ product.title | escape }}</h2>
-
+    {%- comment -%} Above the title, as on the product page. {%- endcomment -%}
     <p class="sp-qv__rating">
-      {%- if rating != blank -%}
-        <span class="sp-qv__stars" style="--pct: {{ rating_pct }}%" role="img" aria-label="Rated {{ rating.rating }} out of 5">
+      {%- if rating_value != blank -%}
+        <span class="sp-qv__stars" style="--pct: {{ rating_pct }}%" role="img" aria-label="Rated {{ rating_value }} out of 5">
           <span class="sp-qv__stars-track" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
           <span class="sp-qv__stars-fill" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         </span>
-        <span>{{ rating.rating }}</span>
-        {%- if rating_count != blank -%}<span class="sp-qv__muted">({{ rating_count }})</span>{%- endif -%}
+        <span class="sp-qv__rating-num">{{ rating_value }}</span>
+        {%- if rating_count != blank -%}<span class="sp-qv__muted">({{ rating_count }} reviews)</span>{%- endif -%}
       {%- else -%}
         <span class="sp-qv__muted">No reviews yet</span>
       {%- endif -%}
     </p>
+
+    <h2 class="sp-qv__title">{{ product.title | escape }}</h2>
 
     <p class="sp-qv__prices">
       <span class="sp-qv__now" data-sp-qv-price>{{ v.price | money }}</span>

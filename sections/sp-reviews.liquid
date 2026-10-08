@@ -1,0 +1,309 @@
+{%- comment -%}
+  ============================================================
+  Customer reviews — product page
+  ============================================================
+
+  Three sources, in this order:
+
+    1  App blocks. A review app (Judge.me, Shopify Product Reviews …) drops
+       its own widget in here, and nothing else is shown.
+    2  Review blocks. Real reviews the merchant collected elsewhere — by
+       email, WhatsApp, Google — typed in by hand. These show everywhere,
+       live theme included.
+    3  Demo reviews, for presenting the design before any exist. Only when
+       there are no review blocks, only with the setting on, and LOCKED to
+       non-published themes: on the live (main) theme they never render.
+       A review no customer wrote is a fabricated review, and publishing one
+       is an offence under the UK DMCC Act 2024. Demo cards are never marked
+       "Verified buyer".
+
+  The summary average follows the product's rating: the reviews metafield
+  if there is one, else the review blocks, else the same demo number the
+  stars above the product title show (sp-demo-rating), so the page agrees
+  with itself.
+  ============================================================
+{%- endcomment -%}
+
+{{ 'sp-reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'sp-reveal.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign s = section.settings
+  assign app_blocks = section.blocks | where: 'type', '@app'
+  assign review_blocks = section.blocks | where: 'type', 'review'
+  assign is_preview = false
+  if theme.role != 'main'
+    assign is_preview = true
+  endif
+
+  assign mode = 'none'
+  if app_blocks.size > 0
+    assign mode = 'app'
+  elsif review_blocks.size > 0
+    assign mode = 'blocks'
+  elsif s.demo_reviews and is_preview
+    assign mode = 'demo'
+  endif
+
+  comment
+    Summary numbers. avg is a string like "4.8"; total is the review count.
+  endcomment
+  assign avg = blank
+  assign total = 0
+  assign meta_rating = product.metafields.reviews.rating.value
+  if meta_rating != blank
+    assign avg = meta_rating.rating | round: 1
+    assign total = product.metafields.reviews.rating_count | default: 0
+  endif
+
+  assign c5 = 0
+  assign c4 = 0
+  assign c3 = 0
+  assign c2 = 0
+  assign c1 = 0
+
+  if mode == 'blocks'
+    assign sum = 0
+    for block in review_blocks
+      assign r = block.settings.rating | plus: 0
+      assign sum = sum | plus: r
+      case r
+        when 5
+          assign c5 = c5 | plus: 1
+        when 4
+          assign c4 = c4 | plus: 1
+        when 3
+          assign c3 = c3 | plus: 1
+        when 2
+          assign c2 = c2 | plus: 1
+        else
+          assign c1 = c1 | plus: 1
+      endcase
+    endfor
+    if avg == blank
+      assign avg = sum | times: 1.0 | divided_by: review_blocks.size | round: 1
+      assign total = review_blocks.size
+    endif
+  elsif mode == 'demo'
+    if avg == blank
+      capture demo
+        render 'sp-demo-rating', id: product.id
+      endcapture
+      assign demo = demo | strip | split: '|'
+      if demo.size == 2
+        assign avg = demo[0]
+        assign total = demo[1] | plus: 0
+      endif
+    endif
+  endif
+
+  comment
+    Star bars as percentages. From real blocks they are counted; for demo
+    they are shaped from the average so a 4.9 leans harder on five stars
+    than a 4.5 does.
+  endcomment
+  assign p5 = 0
+  assign p4 = 0
+  assign p3 = 0
+  assign p2 = 0
+  assign p1 = 0
+  if mode == 'blocks'
+    assign n = review_blocks.size
+    assign p5 = c5 | times: 100 | divided_by: n
+    assign p4 = c4 | times: 100 | divided_by: n
+    assign p3 = c3 | times: 100 | divided_by: n
+    assign p2 = c2 | times: 100 | divided_by: n
+    assign p1 = c1 | times: 100 | divided_by: n
+  elsif mode == 'demo' and avg != blank
+    assign p5 = avg | times: 1.0 | minus: 4.5 | times: 100 | plus: 52 | round
+    assign rest = 100 | minus: p5
+    assign p1 = rest | times: 0.04 | round
+    assign p2 = rest | times: 0.06 | round
+    assign p3 = rest | times: 0.18 | round
+    assign p4 = rest | minus: p3 | minus: p2 | minus: p1
+  endif
+
+  assign avg_pct = 0
+  if avg != blank
+    assign avg_pct = avg | times: 1.0 | divided_by: 5.0 | times: 100
+  endif
+-%}
+
+{%- if mode != 'none' -%}
+  <section
+    class="sp-rv sp-rv--{{ s.scheme }}"
+    id="sp-rv-{{ section.id }}"
+    style="--sp-rv-pad-t: {{ s.padding_top }}px; --sp-rv-pad-b: {{ s.padding_bottom }}px;"
+    data-sp-reveal
+  >
+    <div class="sp-rv__inner">
+      <div class="sp-rv__head">
+        {%- if s.eyebrow != blank -%}
+          <p class="sp-rv__eyebrow">{{ s.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if s.heading != blank -%}
+          <h2 class="sp-rv__heading">{{ s.heading | escape }}</h2>
+        {%- endif -%}
+      </div>
+
+      {%- if mode == 'app' -%}
+        <div class="sp-rv__app">
+          {%- for block in app_blocks -%}
+            {% render block %}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="sp-rv__layout">
+          {%- comment -%} ---------- Summary ---------- {%- endcomment -%}
+          {%- if avg != blank -%}
+            <div class="sp-rv__summary">
+              <p class="sp-rv__avg">{{ avg }}<span class="sp-rv__avg-of">/5</span></p>
+              <span class="sp-rv__stars sp-rv__stars--lg" style="--pct: {{ avg_pct }}%" role="img" aria-label="Rated {{ avg }} out of 5">
+                <span class="sp-rv__stars-track" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="sp-rv__stars-fill" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              </span>
+              <p class="sp-rv__based">Based on {{ total }} {% if total == 1 %}review{% else %}reviews{% endif %}</p>
+
+              <ul class="sp-rv__bars" role="list">
+                {%- for star in (1..5) reversed -%}
+                  {%- liquid
+                    case star
+                      when 5
+                        assign pct = p5
+                      when 4
+                        assign pct = p4
+                      when 3
+                        assign pct = p3
+                      when 2
+                        assign pct = p2
+                      else
+                        assign pct = p1
+                    endcase
+                  -%}
+                  <li class="sp-rv__bar">
+                    <span class="sp-rv__bar-label">{{ star }}&#9733;</span>
+                    <span class="sp-rv__bar-track" aria-hidden="true"><span class="sp-rv__bar-fill" style="width: {{ pct }}%"></span></span>
+                    <span class="sp-rv__bar-pct">{{ pct }}%</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} ---------- Cards ---------- {%- endcomment -%}
+          <ul class="sp-rv__grid" role="list">
+            {%- if mode == 'blocks' -%}
+              {%- for block in review_blocks limit: s.max_reviews -%}
+                {%- liquid
+                  assign b = block.settings
+                  assign r_pct = b.rating | times: 20
+                -%}
+                <li class="sp-rv__card" {{ block.shopify_attributes }}>
+                  {%- render 'sp-review-card',
+                    pct: r_pct,
+                    rating: b.rating,
+                    title: b.title,
+                    body: b.text,
+                    author: b.author,
+                    place: b.location,
+                    when: b.date,
+                    verified: b.verified
+                  -%}
+                </li>
+              {%- endfor -%}
+            {%- else -%}
+              {%- liquid
+                comment
+                  Demo copy. Rotated by product id so neighbouring products
+                  do not open on the same review. Ratings stay in step with
+                  the average: mostly fives, a few fours.
+                endcomment
+                assign d_titles = 'Worth every penny|Comfier than the showroom|Beautiful fabric, solid frame|Delivery team were brilliant|Exactly as pictured|Lovely, one small niggle' | split: '|'
+                assign d_bodies = 'We measured twice and it still felt like a gamble ordering a sofa online, but it fits the room perfectly. The cushions have kept their shape after a month of film nights.|Sat on a lot of sofas before choosing this one. Deep enough to curl up on, firm enough that you are not sinking. My partner has claimed the corner already.|The swatches made choosing the colour easy and the finished piece matches them exactly. You can feel the weight of the frame when you lift it.|Two-person delivery, carried it upstairs, took the packaging away. Booked the slot that suited us and they arrived on time.|Colour, size and finish are just like the photos. It looks far more expensive than it was. Already had compliments from friends.|Really happy with the comfort and the look. Took a few days for the cushions to settle, but it is the best seat in the house now.' | split: '|'
+                assign d_authors = 'Sarah M.|James T.|Priya K.|Daniel R.|Emma W.|Oliver H.' | split: '|'
+                assign d_places = 'Manchester|Leeds|Birmingham|Bristol|London|Glasgow' | split: '|'
+                assign d_when = '2 weeks ago|1 month ago|3 weeks ago|1 week ago|2 months ago|5 days ago' | split: '|'
+                assign d_rate = '5,5,5,5,5,4' | split: ','
+                assign offset = product.id | modulo: 13 | modulo: 6
+                assign shown = s.max_reviews | at_most: 6
+              -%}
+              {%- for i in (1..shown) -%}
+                {%- liquid
+                  assign k = forloop.index0 | plus: offset | modulo: 6
+                  assign r = d_rate[k] | plus: 0
+                  assign r_pct = r | times: 20
+                -%}
+                <li class="sp-rv__card">
+                  {%- render 'sp-review-card',
+                    pct: r_pct,
+                    rating: r,
+                    title: d_titles[k],
+                    body: d_bodies[k],
+                    author: d_authors[k],
+                    place: d_places[k],
+                    when: d_when[k],
+                    verified: false
+                  -%}
+                </li>
+              {%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Customer reviews",
+  "tag": "section",
+  "class": "sp-rv-section",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Customer reviews" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What our customers say" },
+    { "type": "range", "id": "max_reviews", "label": "Reviews to show", "min": 2, "max": 12, "step": 1, "default": 6 },
+    {
+      "type": "checkbox",
+      "id": "demo_reviews",
+      "label": "Demo reviews (preview only)",
+      "info": "Shows sample reviews when you have not added any, for presenting the design. They never appear on the published live theme. Add real reviews as blocks, or a review app block, to replace them.",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "scheme",
+      "label": "Background",
+      "options": [
+        { "value": "ground", "label": "White" },
+        { "value": "raised", "label": "Warm off-white" }
+      ],
+      "default": "ground"
+    },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 88 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 88 }
+  ],
+  "blocks": [
+    { "type": "@app" },
+    {
+      "type": "review",
+      "name": "Review",
+      "limit": 24,
+      "settings": [
+        { "type": "paragraph", "content": "Add only reviews a real customer gave you, in their words." },
+        { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "text", "label": "Review" },
+        { "type": "text", "id": "author", "label": "Customer name", "info": "First name and initial is plenty." },
+        { "type": "text", "id": "location", "label": "Town or city" },
+        { "type": "text", "id": "date", "label": "Date", "info": "For example: March 2026" },
+        { "type": "checkbox", "id": "verified", "label": "Verified buyer", "info": "Tick only if this person bought from you.", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Customer reviews", "settings": { "demo_reviews": true } }
+  ]
+}
+{% endschema %}
